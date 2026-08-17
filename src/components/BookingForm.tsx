@@ -42,7 +42,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   
   // Financial inputs
   const [distanceKm, setDistanceKm] = useState<number | ''>('');
-  const [ratePerKm, setRatePerKm] = useState<number | ''>(47.5);
+  const [ratePerKm, setRatePerKm] = useState<number | ''>('');
   const [driverBata, setDriverBata] = useState<number>(0);
   const [tollParking, setTollParking] = useState<number>(0);
   const [waitingCharges, setWaitingCharges] = useState<number>(0);
@@ -94,7 +94,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       setVehicleNumber('TN37 CE 3466');
       setVehicleType('Innova Crysta');
       setDistanceKm('');
-      setRatePerKm(47.5);
+      setRatePerKm('');
       setDriverBata(0);
       setTollParking(0);
       setWaitingCharges(0);
@@ -243,7 +243,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
               setVehicleNumber('TN37 CE 3466');
               setVehicleType('Innova Crysta');
               setDistanceKm('');
-              setRatePerKm(47.5);
+              setRatePerKm('');
               setDriverBata(0);
               setTollParking(0);
               setWaitingCharges(0);

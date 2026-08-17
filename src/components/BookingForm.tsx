@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { User, MapPin, Car, Calculator, FileCheck, Sparkles, RefreshCw } from 'lucide-react';
+import { User, MapPin, Car, Calculator, FileCheck, RefreshCw } from 'lucide-react';
 import type { BookingData } from '../types/booking';
 import { DEFAULT_VEHICLE_RATES } from '../types/booking';
 import { calculateBookingTotals, generateNextInvoiceId, formatCurrency } from '../utils/billing';
-import { calculateRouteDistance } from '../utils/maps';
 
 interface BookingFormProps {
   onSaveBooking: (booking: BookingData) => void;
@@ -43,28 +42,12 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   
   // Financial inputs
   const [distanceKm, setDistanceKm] = useState<number | ''>('');
-  const [ratePerKm, setRatePerKm] = useState<number>(47.5);
+  const [ratePerKm, setRatePerKm] = useState<number | ''>(47.5);
   const [driverBata, setDriverBata] = useState<number>(0);
   const [tollParking, setTollParking] = useState<number>(0);
   const [waitingCharges, setWaitingCharges] = useState<number>(0);
   const [discount, setDiscount] = useState<number>(0);
   const [gstRate, setGstRate] = useState<number>(5);
-  const [isCalculatingDistance, setIsCalculatingDistance] = useState(false);
-
-  const handleAutoCalculateDistance = async () => {
-    if (!pickupLocation || !dropLocation) {
-      alert('Please fill in both pickup and drop locations first.');
-      return;
-    }
-    setIsCalculatingDistance(true);
-    const dist = await calculateRouteDistance(pickupLocation, dropLocation);
-    setIsCalculatingDistance(false);
-    if (dist !== null) {
-      setDistanceKm(dist);
-    } else {
-      alert('Could not calculate distance automatically. Please enter it manually.');
-    }
-  };
 
   // Auto-generate invoice ID if creating new
   useEffect(() => {
@@ -148,7 +131,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     vehicleNumber,
     vehicleType,
     distanceKm: Number(distanceKm) || 0,
-    ratePerKm,
+    ratePerKm: Number(ratePerKm) || 0,
     driverBata,
     tollParking,
     waitingCharges,
@@ -188,8 +171,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customerName || !customerPhone || !pickupLocation || !dropLocation || distanceKm === '' || Number(distanceKm) <= 0) {
-      alert('Please fill in all required fields, including a valid distance.');
+    if (!customerName || !customerPhone || !pickupLocation || !dropLocation || distanceKm === '' || Number(distanceKm) <= 0 || ratePerKm === '' || Number(ratePerKm) <= 0) {
+      alert('Please fill in all required fields, including valid distance and rate per km.');
       return;
     }
 
@@ -211,7 +194,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       vehicleNumber,
       vehicleType,
       distanceKm: Number(distanceKm) || 0,
-      ratePerKm,
+      ratePerKm: Number(ratePerKm) || 0,
       driverBata,
       tollParking,
       waitingCharges,
@@ -541,34 +524,39 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
                   Distance (KM) *
                 </label>
-                <div className="relative flex items-center space-x-2">
-                  <div className="relative flex-1">
-                    <input
-                      type="number"
-                      min="1"
-                      step="0.5"
-                      value={distanceKm}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setDistanceKm(val === '' ? '' : parseFloat(val));
-                      }}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-bold transition-all pr-12"
-                    />
-                    <span className="absolute right-3.5 top-2.5 text-xs font-semibold text-slate-400">KM</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleAutoCalculateDistance}
-                    disabled={isCalculatingDistance || !pickupLocation || !dropLocation}
-                    className="h-[42px] px-3.5 bg-amber-500 hover:bg-amber-600 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed text-slate-950 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition-all active:scale-95 shadow-sm"
-                  >
-                    {isCalculatingDistance ? (
-                      <span className="animate-spin rounded-full h-3 w-3 border-2 border-slate-950 border-t-transparent"></span>
-                    ) : (
-                      <Sparkles className="w-3.5 h-3.5" />
-                    )}
-                    <span>Auto-Calculate</span>
-                  </button>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min="1"
+                    step="0.5"
+                    value={distanceKm}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setDistanceKm(val === '' ? '' : parseFloat(val));
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-bold transition-all pr-12"
+                  />
+                  <span className="absolute right-3.5 top-2.5 text-xs font-semibold text-slate-400">KM</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Rate per KM (₹) *
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min="1"
+                    step="0.5"
+                    value={ratePerKm}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setRatePerKm(val === '' ? '' : parseFloat(val));
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-bold transition-all pr-12"
+                  />
+                  <span className="absolute right-3.5 top-2.5 text-xs font-semibold text-slate-400">₹/KM</span>
                 </div>
               </div>
             </div>

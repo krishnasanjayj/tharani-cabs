@@ -1,0 +1,716 @@
+import React, { useState, useEffect } from 'react';
+import { User, MapPin, Car, Calculator, FileCheck, Sparkles, RefreshCw } from 'lucide-react';
+import type { BookingData } from '../types/booking';
+import { DEFAULT_VEHICLE_RATES } from '../types/booking';
+import { calculateBookingTotals, generateNextInvoiceId, formatCurrency } from '../utils/billing';
+import { calculateRouteDistance } from '../utils/maps';
+
+interface BookingFormProps {
+  onSaveBooking: (booking: BookingData) => void;
+  existingBookings: BookingData[];
+  initialData?: BookingData | null;
+  onLiveUpdate?: (booking: BookingData) => void;
+}
+
+export const BookingForm: React.FC<BookingFormProps> = ({
+  onSaveBooking,
+  existingBookings,
+  initialData,
+  onLiveUpdate,
+}) => {
+  const [invoiceId, setInvoiceId] = useState<string>('TC-001');
+  const [invoiceDate, setInvoiceDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  
+  // Customer Details
+  const [customerName, setCustomerName] = useState<string>('');
+  const [customerPhone, setCustomerPhone] = useState<string>('');
+  const [personsCount, setPersonsCount] = useState<number>(1);
+  const [customerEmail, setCustomerEmail] = useState<string>('');
+  const [billingAddress, setBillingAddress] = useState<string>('');
+  const [customerType, setCustomerType] = useState<'individual' | 'business'>('individual');
+  
+  // Trip Details
+  const [pickupLocation, setPickupLocation] = useState<string>('');
+  const [dropLocation, setDropLocation] = useState<string>('');
+  const [pickupDate, setPickupDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [pickupTime, setPickupTime] = useState<string>('09:00 AM');
+  const [dropTime, setDropTime] = useState<string>('06:00 PM');
+  
+  // Driver & Vehicle
+  const [driverName, setDriverName] = useState<string>('Nadhagopal');
+  const [vehicleNumber, setVehicleNumber] = useState<string>('TN37 CE 3466');
+  const [vehicleType, setVehicleType] = useState<string>('Innova Crysta');
+  
+  // Financial inputs
+  const [distanceKm, setDistanceKm] = useState<number | ''>('');
+  const [ratePerKm, setRatePerKm] = useState<number>(47.5);
+  const [driverBata, setDriverBata] = useState<number>(0);
+  const [tollParking, setTollParking] = useState<number>(0);
+  const [waitingCharges, setWaitingCharges] = useState<number>(0);
+  const [discount, setDiscount] = useState<number>(0);
+  const [gstRate, setGstRate] = useState<number>(5);
+  const [isCalculatingDistance, setIsCalculatingDistance] = useState(false);
+
+  const handleAutoCalculateDistance = async () => {
+    if (!pickupLocation || !dropLocation) {
+      alert('Please fill in both pickup and drop locations first.');
+      return;
+    }
+    setIsCalculatingDistance(true);
+    const dist = await calculateRouteDistance(pickupLocation, dropLocation);
+    setIsCalculatingDistance(false);
+    if (dist !== null) {
+      setDistanceKm(dist);
+    } else {
+      alert('Could not calculate distance automatically. Please enter it manually.');
+    }
+  };
+
+  // Auto-generate invoice ID if creating new
+  useEffect(() => {
+    if (initialData) {
+      setInvoiceId(initialData.invoiceId);
+      setInvoiceDate(initialData.invoiceDate);
+      setCustomerName(initialData.customerName);
+      setCustomerPhone(initialData.customerPhone);
+      setPersonsCount(initialData.personsCount || 1);
+      setCustomerEmail(initialData.customerEmail || '');
+      setBillingAddress(initialData.billingAddress || '');
+      setCustomerType(initialData.customerType || 'individual');
+      setPickupLocation(initialData.pickupLocation);
+      setDropLocation(initialData.dropLocation);
+      setPickupDate(initialData.pickupDate);
+      setPickupTime(initialData.pickupTime || '');
+      setDropTime(initialData.dropTime || '');
+      setDriverName(initialData.driverName || 'Nadhagopal');
+      setVehicleNumber(initialData.vehicleNumber || 'TN37 CE 3466');
+      setVehicleType(initialData.vehicleType || 'Innova Crysta');
+      setDistanceKm(initialData.distanceKm);
+      setRatePerKm(initialData.ratePerKm);
+      setDriverBata(initialData.driverBata);
+      setTollParking(initialData.tollParking);
+      setWaitingCharges(initialData.waitingCharges);
+      setDiscount(initialData.discount);
+      setGstRate(initialData.gstRate ?? 5);
+    } else {
+      const nextId = generateNextInvoiceId(existingBookings);
+      setInvoiceId(nextId);
+      setInvoiceDate(new Date().toISOString().split('T')[0]);
+      setCustomerName('');
+      setCustomerPhone('');
+      setPersonsCount(1);
+      setCustomerEmail('');
+      setBillingAddress('');
+      setCustomerType('individual');
+      setPickupLocation('');
+      setDropLocation('');
+      setPickupDate(new Date().toISOString().split('T')[0]);
+      setPickupTime('09:00 AM');
+      setDropTime('06:00 PM');
+      setDriverName('Nadhagopal');
+      setVehicleNumber('TN37 CE 3466');
+      setVehicleType('Innova Crysta');
+      setDistanceKm('');
+      setRatePerKm(47.5);
+      setDriverBata(0);
+      setTollParking(0);
+      setWaitingCharges(0);
+      setDiscount(0);
+      setGstRate(5);
+    }
+  }, [initialData, existingBookings]);
+
+  // Update rate per km when vehicle type changes
+  const handleVehicleChange = (typeName: string) => {
+    setVehicleType(typeName);
+    const found = DEFAULT_VEHICLE_RATES.find((r) => r.name.toLowerCase().includes(typeName.toLowerCase()));
+    if (found) {
+      setRatePerKm(found.ratePerKm);
+    }
+  };
+
+  // Live calculation preview
+  const liveBookingData = calculateBookingTotals({
+    invoiceId,
+    invoiceDate,
+    customerName,
+    customerPhone,
+    personsCount,
+    customerEmail,
+    billingAddress,
+    customerType,
+    pickupLocation,
+    dropLocation,
+    pickupDate,
+    pickupTime,
+    dropTime,
+    driverName,
+    vehicleNumber,
+    vehicleType,
+    distanceKm: Number(distanceKm) || 0,
+    ratePerKm,
+    driverBata,
+    tollParking,
+    waitingCharges,
+    discount,
+    gstRate,
+    createdAt: new Date().toISOString(),
+  });
+
+  // Sync live booking data back to parent state for instant preview
+  useEffect(() => {
+    onLiveUpdate?.(liveBookingData);
+  }, [
+    invoiceId,
+    invoiceDate,
+    customerName,
+    customerPhone,
+    personsCount,
+    customerEmail,
+    billingAddress,
+    customerType,
+    pickupLocation,
+    dropLocation,
+    pickupDate,
+    pickupTime,
+    dropTime,
+    driverName,
+    vehicleNumber,
+    vehicleType,
+    distanceKm,
+    ratePerKm,
+    driverBata,
+    tollParking,
+    waitingCharges,
+    discount,
+    gstRate,
+  ]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customerName || !customerPhone || !pickupLocation || !dropLocation || distanceKm === '' || Number(distanceKm) <= 0) {
+      alert('Please fill in all required fields, including a valid distance.');
+      return;
+    }
+
+    const finalData = calculateBookingTotals({
+      invoiceId,
+      invoiceDate,
+      customerName,
+      customerPhone,
+      personsCount,
+      customerEmail,
+      billingAddress,
+      customerType,
+      pickupLocation,
+      dropLocation,
+      pickupDate,
+      pickupTime,
+      dropTime,
+      driverName,
+      vehicleNumber,
+      vehicleType,
+      distanceKm: Number(distanceKm) || 0,
+      ratePerKm,
+      driverBata,
+      tollParking,
+      waitingCharges,
+      discount,
+      gstRate,
+      createdAt: new Date().toISOString(),
+    });
+
+    onSaveBooking(finalData);
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      {/* Page Title & Preset Action Bar */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+          <div className="flex items-center space-x-2">
+            <span className="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-0.5 rounded-full border border-amber-300">
+              Invoice #{invoiceId}
+            </span>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Create Cab Booking & Bill</h1>
+          </div>
+          <p className="text-sm text-slate-500 mt-1">
+            Fill in the customer details and trip parameters to auto-generate the Tharani Cabs official invoice.
+          </p>
+        </div>
+
+        <div className="flex items-center space-x-3">
+          <button
+            type="button"
+            onClick={() => {
+              setInvoiceId(generateNextInvoiceId(existingBookings));
+              setInvoiceDate(new Date().toISOString().split('T')[0]);
+              setCustomerName('');
+              setCustomerPhone('');
+              setPersonsCount(1);
+              setCustomerEmail('');
+              setBillingAddress('');
+              setCustomerType('individual');
+              setPickupLocation('');
+              setDropLocation('');
+              setPickupDate(new Date().toISOString().split('T')[0]);
+              setPickupTime('09:00 AM');
+              setDropTime('06:00 PM');
+              setDriverName('Nadhagopal');
+              setVehicleNumber('TN37 CE 3466');
+              setVehicleType('Innova Crysta');
+              setDistanceKm('');
+              setRatePerKm(47.5);
+              setDriverBata(0);
+              setTollParking(0);
+              setWaitingCharges(0);
+              setDiscount(0);
+              setGstRate(5);
+            }}
+            className="flex items-center space-x-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-3.5 py-2.5 rounded-xl text-sm transition-all"
+          >
+            <RefreshCw className="w-4 h-4" />
+            <span>Reset Form</span>
+          </button>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left 2 Columns: Input Controls */}
+        <div className="lg:col-span-2 space-y-6">
+          
+          {/* Section 1: Customer Details */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <div className="flex items-center space-x-2 pb-3 border-b border-slate-100">
+              <User className="w-5 h-5 text-amber-600" />
+              <h2 className="text-base font-bold text-slate-900">1. Customer Information</h2>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Customer / Company Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Kumar"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  WhatsApp Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  placeholder="e.g. 996543210"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Customer Type
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCustomerType('individual')}
+                    className={`py-2 px-3 rounded-xl border text-sm font-semibold transition-all ${
+                      customerType === 'individual'
+                        ? 'border-amber-500 bg-amber-50 text-amber-900 ring-2 ring-amber-500/10'
+                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    Individual
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCustomerType('business')}
+                    className={`py-2 px-3 rounded-xl border text-sm font-semibold transition-all ${
+                      customerType === 'business'
+                        ? 'border-amber-500 bg-amber-50 text-amber-900 ring-2 ring-amber-500/10'
+                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    Business
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Customer Email (Optional)
+                </label>
+                <input
+                  type="email"
+                  placeholder="e.g. customer@example.com"
+                  value={customerEmail}
+                  onChange={(e) => setCustomerEmail(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Number of Persons
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="7"
+                  value={personsCount}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value, 10) || 1;
+                    setPersonsCount(Math.min(7, Math.max(1, val)));
+                  }}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Invoice Date
+                </label>
+                <input
+                  type="date"
+                  value={invoiceDate}
+                  onChange={(e) => setInvoiceDate(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Billing Address (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. 123 Business Park, Sector 5, Coimbatore"
+                  value={billingAddress}
+                  onChange={(e) => setBillingAddress(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: Trip Details */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <div className="flex items-center space-x-2 pb-3 border-b border-slate-100">
+              <MapPin className="w-5 h-5 text-amber-600" />
+              <h2 className="text-base font-bold text-slate-900">2. Trip Details</h2>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Pickup Location *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Gandhipuram"
+                  value={pickupLocation}
+                  onChange={(e) => setPickupLocation(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Drop Location *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Coimbatore Airport"
+                  value={dropLocation}
+                  onChange={(e) => setDropLocation(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Pickup Date
+                </label>
+                <input
+                  type="date"
+                  value={pickupDate}
+                  onChange={(e) => setPickupDate(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                    Pickup Time
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="09:00 AM"
+                    value={pickupTime}
+                    onChange={(e) => setPickupTime(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                    Drop Time
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="06:00 PM"
+                    value={dropTime}
+                    onChange={(e) => setDropTime(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: Driver & Vehicle Selection */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <div className="flex items-center space-x-2 pb-3 border-b border-slate-100">
+              <Car className="w-5 h-5 text-amber-600" />
+              <h2 className="text-base font-bold text-slate-900">3. Vehicle & Driver</h2>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Vehicle Type / Model
+                </label>
+                <select
+                  disabled
+                  value={vehicleType}
+                  onChange={(e) => handleVehicleChange(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-500 bg-slate-50 cursor-not-allowed text-sm font-medium transition-all"
+                >
+                  {DEFAULT_VEHICLE_RATES.map((rate) => (
+                    <option key={rate.id} value={rate.name}>
+                      {rate.name} (₹{rate.ratePerKm}/km)
+                    </option>
+                  ))}
+                  <option value="Custom Vehicle">Custom Vehicle Model</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Driver Name
+                </label>
+                <input
+                  disabled
+                  type="text"
+                  placeholder="e.g. Nadhagopal"
+                  value={driverName}
+                  onChange={(e) => setDriverName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-500 bg-slate-50 cursor-not-allowed text-sm font-medium transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Vehicle Registration No.
+                </label>
+                <input
+                  disabled
+                  type="text"
+                  placeholder="e.g. TN37 CE 3466"
+                  value={vehicleNumber}
+                  onChange={(e) => setVehicleNumber(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-500 bg-slate-50 cursor-not-allowed text-sm font-medium transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Distance & Rate per KM */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Distance (KM) *
+                </label>
+                <div className="relative flex items-center space-x-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="number"
+                      min="1"
+                      step="0.5"
+                      value={distanceKm}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setDistanceKm(val === '' ? '' : parseFloat(val));
+                      }}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-bold transition-all pr-12"
+                    />
+                    <span className="absolute right-3.5 top-2.5 text-xs font-semibold text-slate-400">KM</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAutoCalculateDistance}
+                    disabled={isCalculatingDistance || !pickupLocation || !dropLocation}
+                    className="h-[42px] px-3.5 bg-amber-500 hover:bg-amber-600 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed text-slate-950 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition-all active:scale-95 shadow-sm"
+                  >
+                    {isCalculatingDistance ? (
+                      <span className="animate-spin rounded-full h-3 w-3 border-2 border-slate-950 border-t-transparent"></span>
+                    ) : (
+                      <Sparkles className="w-3.5 h-3.5" />
+                    )}
+                    <span>Auto-Calculate</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 4: Extra Charges & Discounts */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <div className="flex items-center space-x-2 pb-3 border-b border-slate-100">
+              <Calculator className="w-5 h-5 text-amber-600" />
+              <h2 className="text-base font-bold text-slate-900">4. Extra Charges & Discounts</h2>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Driver Bata (₹)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={driverBata}
+                  onChange={(e) => setDriverBata(parseFloat(e.target.value) || 0)}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 text-slate-900 text-sm font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Toll & Parking (₹)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={tollParking}
+                  onChange={(e) => setTollParking(parseFloat(e.target.value) || 0)}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 text-slate-900 text-sm font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Waiting Charges (₹)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={waitingCharges}
+                  onChange={(e) => setWaitingCharges(parseFloat(e.target.value) || 0)}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 text-slate-900 text-sm font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Discount (₹)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={discount}
+                  onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 text-slate-900 text-sm font-medium"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Live Fare Summary Card & Submit */}
+        <div className="space-y-6">
+          <div className="bg-slate-900 text-white p-6 rounded-3xl shadow-xl sticky top-24 space-y-6 border border-slate-800">
+            <div className="flex justify-between items-center pb-4 border-b border-slate-800">
+              <span className="text-xs font-bold tracking-widest text-amber-400 uppercase">
+                Fare Summary
+              </span>
+              <span className="text-xs text-slate-400 font-mono">{liveBookingData.invoiceId}</span>
+            </div>
+
+            {/* Calculations Breakdown */}
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Cab Fare ({distanceKm} km × ₹{ratePerKm})</span>
+                <span className="font-bold text-white">{formatCurrency(liveBookingData.cabFare)}</span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Driver Bata</span>
+                <span className="font-medium text-white">{formatCurrency(driverBata)}</span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Toll & Parking</span>
+                <span className="font-medium text-white">{formatCurrency(tollParking)}</span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Waiting Charges</span>
+                <span className="font-medium text-white">{formatCurrency(waitingCharges)}</span>
+              </div>
+
+              <div className="pt-2 border-t border-slate-800 flex justify-between items-center">
+                <span className="text-slate-300 font-medium">Subtotal</span>
+                <span className="font-bold text-white">{formatCurrency(liveBookingData.subtotal)}</span>
+              </div>
+
+              {discount > 0 && (
+                <div className="flex justify-between items-center text-emerald-400">
+                  <span>Discount</span>
+                  <span>− {formatCurrency(discount)}</span>
+                </div>
+              )}
+
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">GST ({gstRate}%)</span>
+                <span className="font-medium text-white">{formatCurrency(liveBookingData.gstAmount)}</span>
+              </div>
+            </div>
+
+            {/* Total Payable Box */}
+            <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex justify-between items-center">
+              <div>
+                <span className="text-xs font-bold text-amber-400 tracking-wider uppercase block">
+                  TOTAL PAYABLE
+                </span>
+                <span className="text-xs text-amber-200/70">Inclusive of all taxes</span>
+              </div>
+              <span className="text-2xl font-black text-amber-400 tracking-tight">
+                {formatCurrency(liveBookingData.totalPayable)}
+              </span>
+            </div>
+
+            {/* Main Submit Button */}
+            <button
+              type="submit"
+              className="w-full flex items-center justify-center space-x-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-base py-3.5 px-6 rounded-2xl transition-all shadow-lg shadow-amber-500/25 active:scale-95"
+            >
+              <FileCheck className="w-5 h-5" />
+              <span>Generate Invoice & Book</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+};

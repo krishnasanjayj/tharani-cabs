@@ -1,0 +1,32 @@
+[
+  {
+    "invoiceId": "TC-001",
+    "invoiceDate": "13/08/2026",
+    "customerName": "Dummy Customer",
+    "customerPhone": "996543210",
+    "personsCount": 1,
+    "customerEmail": "dummy@example.com",
+    "billingAddress": "Dummy Billing Address",
+    "customerType": "individual",
+    "pickupLocation": "Gandhipuram",
+    "dropLocation": "Coimbatore Airport",
+    "pickupDate": "2026-08-14",
+    "pickupTime": "12:00 PM",
+    "dropTime": "01:00 PM",
+    "driverName": "Nadhagopal",
+    "vehicleNumber": "TN37CE3466",
+    "vehicleType": "Innova Crysta",
+    "distanceKm": 11.5,
+    "ratePerKm": 47.5,
+    "driverBata": 0,
+    "tollParking": 0,
+    "waitingCharges": 0,
+    "discount": 0,
+    "gstRate": 0,
+    "cabFare": 546.25,
+    "subtotal": 546.25,
+    "gstAmount": 0,
+    "totalPayable": 546.25,
+    "createdAt": "2026-08-14T09:35:31.609Z"
+  }
+]

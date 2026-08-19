@@ -101,7 +101,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       setDiscount(0);
       setGstRate(5);
     }
-  }, [initialData, existingBookings]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialData]);
 
   // Update rate per km when vehicle type changes
   const handleVehicleChange = (typeName: string) => {

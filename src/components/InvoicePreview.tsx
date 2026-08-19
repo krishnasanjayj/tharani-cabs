@@ -240,7 +240,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
                 <tr>
                   <td className="py-4 font-bold text-slate-900">Cab Fare</td>
                   <td className="py-4 text-slate-700 font-medium">
-                    {booking.vehicleType || 'Innova Crysta'} · {booking.distanceKm} km × ₹{booking.ratePerKm}/km
+                    {booking.vehicleType ? `${booking.vehicleType} · ` : ''}{booking.distanceKm} km × ₹{booking.ratePerKm}/km
                     {booking.totalHours ? ` · Total Hours: ${booking.totalHours} hrs` : ''}
                   </td>
                   <td className="py-4 text-right font-bold text-slate-900">
@@ -248,14 +248,16 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
                   </td>
                 </tr>
 
-                {/* Row 2: Driver / Vehicle with Pickup & Drop Time per prompt specs */}
+                {/* Row 2: Driver / Vehicle */}
                 <tr>
                   <td className="py-4 font-bold text-slate-900">Driver / Vehicle</td>
                   <td className="py-4 text-slate-700 font-medium">
-                    Driver: {booking.driverName || 'Nadhagopal'} · Vehicle: {booking.vehicleNumber || 'TN37 CE 3466'} · Trip Date: {formatDate(booking.pickupDate)}
-                    {booking.pickupTime || booking.dropTime ? (
-                      ` · Time: ${booking.pickupTime || ''}${booking.dropTime ? ` - ${booking.dropTime}` : ''}`
-                    ) : ''}
+                    {[
+                      booking.driverName ? `Driver: ${booking.driverName}` : '',
+                      booking.vehicleNumber ? `Vehicle: ${booking.vehicleNumber}` : '',
+                      booking.pickupDate ? `Trip Date: ${formatDate(booking.pickupDate)}` : '',
+                      (booking.pickupTime || booking.dropTime) ? `Time: ${booking.pickupTime || ''}${booking.dropTime ? ` - ${booking.dropTime}` : ''}` : '',
+                    ].filter(Boolean).join(' · ')}
                   </td>
                   <td className="py-4 text-right text-slate-400 font-normal">—</td>
                 </tr>

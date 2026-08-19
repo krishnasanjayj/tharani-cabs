@@ -7,25 +7,25 @@ import { SettingsModal } from './components/SettingsModal';
 import type { BookingData, WhatsAppConfig } from './types/booking';
 import { calculateBookingTotals } from './utils/billing';
 
-const SAMPLE_BOOKING_TC001: BookingData = calculateBookingTotals({
+const EMPTY_BOOKING_TEMPLATE: BookingData = calculateBookingTotals({
   invoiceId: 'TC-001',
-  invoiceDate: '13/08/2026',
-  customerName: 'Dummy Customer',
-  customerPhone: '996543210',
+  invoiceDate: new Date().toISOString().split('T')[0],
+  customerName: '',
+  customerPhone: '',
   personsCount: 1,
-  customerEmail: 'dummy@example.com',
-  billingAddress: 'Dummy Billing Address',
+  customerEmail: '',
+  billingAddress: '',
   customerType: 'individual',
-  pickupLocation: 'Gandhipuram',
-  dropLocation: 'Coimbatore Airport',
-  pickupDate: '2026-08-14',
-  pickupTime: '12:00 PM',
-  dropTime: '01:00 PM',
-  driverName: 'Nadhagopal',
-  vehicleNumber: 'TN37CE3466',
-  vehicleType: 'Innova Crysta',
-  distanceKm: 11.5,
-  ratePerKm: 47.5,
+  pickupLocation: '',
+  dropLocation: '',
+  pickupDate: new Date().toISOString().split('T')[0],
+  pickupTime: '',
+  dropTime: '',
+  driverName: '',
+  vehicleNumber: '',
+  vehicleType: '',
+  distanceKm: 0,
+  ratePerKm: 0,
   driverBata: 0,
   tollParking: 0,
   waitingCharges: 0,
@@ -37,7 +37,7 @@ const SAMPLE_BOOKING_TC001: BookingData = calculateBookingTotals({
 export function App() {
   const [activeTab, setActiveTab] = useState<'create' | 'preview' | 'history' | 'settings'>('create');
   const [bookings, setBookings] = useState<BookingData[]>([]);
-  const [activeBooking, setActiveBooking] = useState<BookingData>(SAMPLE_BOOKING_TC001);
+  const [activeBooking, setActiveBooking] = useState<BookingData>(EMPTY_BOOKING_TEMPLATE);
   const [editingBooking, setEditingBooking] = useState<BookingData | null>(null);
 
   const handleTabChange = (tab: 'create' | 'preview' | 'history' | 'settings') => {
@@ -59,8 +59,6 @@ export function App() {
           const json = await res.json();
           if (json.data && json.data.length > 0) {
             setBookings(json.data);
-            // Default active booking to latest or sample
-            setActiveBooking(json.data[0]);
             return;
           }
         }
@@ -75,17 +73,12 @@ export function App() {
           const parsed = JSON.parse(saved);
           if (parsed.length > 0) {
             setBookings(parsed);
-            setActiveBooking(parsed[0]);
             return;
           }
         } catch (e) {
           console.error(e);
         }
       }
-
-      // Default sample if no bookings exist
-      setBookings([SAMPLE_BOOKING_TC001]);
-      setActiveBooking(SAMPLE_BOOKING_TC001);
     };
 
     fetchBookings();
@@ -134,7 +127,7 @@ export function App() {
         if (filtered.length > 0) {
           setActiveBooking(filtered[0]);
         } else {
-          setActiveBooking(SAMPLE_BOOKING_TC001);
+          setActiveBooking(EMPTY_BOOKING_TEMPLATE);
         }
       }
       return filtered;

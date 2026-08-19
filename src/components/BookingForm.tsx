@@ -32,13 +32,13 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   const [pickupLocation, setPickupLocation] = useState<string>('');
   const [dropLocation, setDropLocation] = useState<string>('');
   const [pickupDate, setPickupDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [pickupTime, setPickupTime] = useState<string>('09:00 AM');
-  const [dropTime, setDropTime] = useState<string>('06:00 PM');
+  const [pickupTime, setPickupTime] = useState<string>('');
+  const [dropTime, setDropTime] = useState<string>('');
   
   // Driver & Vehicle
-  const [driverName, setDriverName] = useState<string>('Nadhagopal');
-  const [vehicleNumber, setVehicleNumber] = useState<string>('TN37 CE 3466');
-  const [vehicleType, setVehicleType] = useState<string>('Innova Crysta');
+  const [driverName, setDriverName] = useState<string>('');
+  const [vehicleNumber, setVehicleNumber] = useState<string>('');
+  const [vehicleType, setVehicleType] = useState<string>('');
   
   // Financial inputs
   const [distanceKm, setDistanceKm] = useState<number | ''>('');
@@ -49,7 +49,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   const [extraHoursCount, setExtraHoursCount] = useState<number | ''>('');
   const [waitingCharges, setWaitingCharges] = useState<number>(0);
   const [discount, setDiscount] = useState<number>(0);
-  const [gstRate, setGstRate] = useState<number>(5);
+  const [gstRate, setGstRate] = useState<number | ''>('');
 
   // Auto-generate invoice ID if creating new
   useEffect(() => {
@@ -67,9 +67,9 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       setPickupDate(initialData.pickupDate);
       setPickupTime(initialData.pickupTime || '');
       setDropTime(initialData.dropTime || '');
-      setDriverName(initialData.driverName || 'Nadhagopal');
-      setVehicleNumber(initialData.vehicleNumber || 'TN37 CE 3466');
-      setVehicleType(initialData.vehicleType || 'Innova Crysta');
+      setDriverName(initialData.driverName || '');
+      setVehicleNumber(initialData.vehicleNumber || '');
+      setVehicleType(initialData.vehicleType || '');
       setDistanceKm(initialData.distanceKm);
       setTotalHours(initialData.totalHours ?? '');
       setRatePerKm(initialData.ratePerKm);
@@ -78,7 +78,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       setExtraHoursCount(initialData.extraHoursCount ?? '');
       setWaitingCharges(initialData.waitingCharges);
       setDiscount(initialData.discount);
-      setGstRate(initialData.gstRate ?? 5);
+      setGstRate(initialData.gstRate ?? '');
     } else {
       const nextId = generateNextInvoiceId(existingBookings);
       setInvoiceId(nextId);
@@ -92,11 +92,11 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       setPickupLocation('');
       setDropLocation('');
       setPickupDate(new Date().toISOString().split('T')[0]);
-      setPickupTime('09:00 AM');
-      setDropTime('06:00 PM');
-      setDriverName('Nadhagopal');
-      setVehicleNumber('TN37 CE 3466');
-      setVehicleType('Innova Crysta');
+      setPickupTime('');
+      setDropTime('');
+      setDriverName('');
+      setVehicleNumber('');
+      setVehicleType('');
       setDistanceKm('');
       setTotalHours('');
       setRatePerKm('');
@@ -105,7 +105,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       setExtraHoursCount('');
       setWaitingCharges(0);
       setDiscount(0);
-      setGstRate(5);
+      setGstRate('');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialData]);
@@ -136,7 +136,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     extraHoursCount: extraHoursCount === '' ? undefined : Number(extraHoursCount),
     waitingCharges,
     discount,
-    gstRate,
+    gstRate: gstRate === '' ? 0 : Number(gstRate),
     createdAt: new Date().toISOString(),
   });
 
@@ -203,7 +203,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       extraHoursCount: extraHoursCount === '' ? undefined : Number(extraHoursCount),
       waitingCharges,
       discount,
-      gstRate,
+      gstRate: gstRate === '' ? 0 : Number(gstRate),
       createdAt: new Date().toISOString(),
     });
 
@@ -241,11 +241,11 @@ export const BookingForm: React.FC<BookingFormProps> = ({
               setPickupLocation('');
               setDropLocation('');
               setPickupDate(new Date().toISOString().split('T')[0]);
-              setPickupTime('09:00 AM');
-              setDropTime('06:00 PM');
-              setDriverName('Nadhagopal');
-              setVehicleNumber('TN37 CE 3466');
-              setVehicleType('Innova Crysta');
+              setPickupTime('');
+              setDropTime('');
+              setDriverName('');
+              setVehicleNumber('');
+              setVehicleType('');
               setDistanceKm('');
               setTotalHours('');
               setRatePerKm('');
@@ -254,7 +254,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
               setExtraHoursCount('');
               setWaitingCharges(0);
               setDiscount(0);
-              setGstRate(5);
+              setGstRate('');
             }}
             className="flex items-center space-x-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-3.5 py-2.5 rounded-xl text-sm transition-all"
           >
@@ -584,10 +584,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center space-x-2 pb-3 border-b border-slate-100">
               <Calculator className="w-5 h-5 text-amber-600" />
-              <h2 className="text-base font-bold text-slate-900">4. Extra Charges</h2>
+              <h2 className="text-base font-bold text-slate-900">4. Extra Charges & GST</h2>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
                   Driver Bata (₹)
@@ -644,6 +644,20 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                   className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 text-slate-900 text-sm font-medium"
                 />
               </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  GST Rate
+                </label>
+                <select
+                  value={gstRate === '' ? 0 : gstRate}
+                  onChange={(e) => setGstRate(parseFloat(e.target.value))}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 text-slate-900 text-sm font-medium bg-white cursor-pointer"
+                >
+                  <option value={5}>5%</option>
+                  <option value={0}>0%</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -687,10 +701,12 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 <span className="font-bold text-white">{formatCurrency(liveBookingData.subtotal)}</span>
               </div>
 
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400">GST ({gstRate}%)</span>
-                <span className="font-medium text-white">{formatCurrency(liveBookingData.gstAmount)}</span>
-              </div>
+              {liveBookingData.gstRate > 0 && (
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">GST ({liveBookingData.gstRate}%)</span>
+                  <span className="font-medium text-white">{formatCurrency(liveBookingData.gstAmount)}</span>
+                </div>
+              )}
             </div>
 
             {/* Total Payable Box */}

@@ -293,10 +293,12 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
                 <span className="font-bold text-slate-900">{formatCurrency(booking.subtotal)}</span>
               </div>
 
-              <div className="flex justify-between items-center text-slate-700">
-                <span className="font-medium text-slate-600">GST ({booking.gstRate}%)</span>
-                <span className="font-bold text-slate-900">{formatCurrency(booking.gstAmount)}</span>
-              </div>
+              {booking.gstRate > 0 && (
+                <div className="flex justify-between items-center text-slate-700">
+                  <span className="font-medium text-slate-600">GST ({booking.gstRate}%)</span>
+                  <span className="font-bold text-slate-900">{formatCurrency(booking.gstAmount)}</span>
+                </div>
+              )}
 
               <div className="pt-4 flex justify-between items-baseline border-t-0">
                 <span className="text-sm font-bold tracking-widest text-[#ca8a04] uppercase">

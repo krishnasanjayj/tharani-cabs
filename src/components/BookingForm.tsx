@@ -471,18 +471,13 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
                   Vehicle Type / Model
                 </label>
-                <select
+                <input
+                  type="text"
+                  placeholder="e.g. Innova Crysta"
                   value={vehicleType}
-                  onChange={(e) => handleVehicleChange(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 bg-white text-sm font-medium transition-all"
-                >
-                  {DEFAULT_VEHICLE_RATES.map((rate) => (
-                    <option key={rate.id} value={rate.name}>
-                      {rate.name} (₹{rate.ratePerKm}/km)
-                    </option>
-                  ))}
-                  <option value="Custom Vehicle">Custom Vehicle Model</option>
-                </select>
+                  onChange={(e) => setVehicleType(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
+                />
               </div>
 
               <div>

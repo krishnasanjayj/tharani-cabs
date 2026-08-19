@@ -126,7 +126,14 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
           <div className="flex justify-between items-start pt-2">
             {/* Company Details */}
             <div className="flex items-start space-x-4">
-              <img src="/logo_transparent.png" alt="Tharani Cabs Logo" className="w-20 h-20 object-contain mt-1" />
+              <img
+                src="/logo_transparent.png"
+                alt="Tharani Cabs Logo"
+                width="80"
+                height="80"
+                style={{ width: '80px', height: '80px', objectFit: 'contain' }}
+                className="w-20 h-20 object-contain mt-1 shrink-0"
+              />
               <div>
                 <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
                   {COMPANY_INFO.name}
@@ -324,12 +331,17 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
               </p>
             </div>
 
-            {/* Authorised Signatory */}
-            <div className="text-center sm:text-right space-y-12">
-              <p className="font-semibold text-slate-800">For Tharani Cabs</p>
-              <div>
-                <div className="w-48 border-b border-slate-300 mx-auto sm:ml-auto mb-2"></div>
-                <p className="font-medium text-slate-600">Authorised Signatory</p>
+            {/* Authorised Signatory with Official Seal & Signature */}
+            <div className="flex flex-col items-end text-right pt-2">
+              <div className="relative">
+                <img
+                  src="/seal_signature.png"
+                  alt="For Tharani Cabs Official Seal & Signature"
+                  width="240"
+                  height="112"
+                  style={{ width: '240px', height: 'auto', objectFit: 'contain' }}
+                  className="w-60 h-auto object-contain mix-blend-multiply drop-shadow-sm shrink-0"
+                />
               </div>
             </div>
           </div>

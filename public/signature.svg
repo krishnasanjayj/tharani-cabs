@@ -1,0 +1,30 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='340' height='140' viewBox='0 0 340 140'>
+  <g fill='none' stroke='#1e40af' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round'>
+    <!-- Letter A -->
+    <path d='M 35 110 L 75 25 L 105 110 M 48 78 L 92 78' />
+    <circle cx='118' cy='105' r='3' fill='#1e40af' />
+    
+    <!-- Letter D -->
+    <path d='M 140 110 L 140 28 C 210 20, 210 115, 145 110 C 135 109, 130 100, 138 90' />
+    
+    <!-- Letter h -->
+    <path d='M 185 30 L 185 110 M 185 75 C 195 62, 215 62, 215 110' />
+    
+    <!-- Letter a -->
+    <path d='M 238 85 C 238 68, 220 68, 220 88 C 220 108, 240 108, 240 75 L 240 110' />
+    
+    <!-- Letter r -->
+    <path d='M 252 110 L 252 72 C 255 65, 270 65, 275 72' />
+    
+    <!-- Letter a -->
+    <path d='M 295 85 C 295 68, 278 68, 278 88 C 278 108, 297 108, 297 75 L 297 110' />
+    
+    <!-- Letter n -->
+    <path d='M 308 110 L 308 72 C 315 64, 328 64, 328 110' />
+    
+    <!-- Letter i -->
+    <path d='M 338 72 L 338 110' />
+    <!-- i dot / accent stroke -->
+    <path d='M 332 55 L 345 48' stroke-width='3.5' />
+  </g>
+</svg>

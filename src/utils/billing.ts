@@ -17,7 +17,7 @@ export function calculateBookingTotals(
   const gstRate = Math.max(0, Number(data.gstRate) || 0);
   
   const subtotal = cabFare + driverBata + tollParking + waitingCharges;
-  const taxableAmount = Math.max(0, subtotal - discount);
+  const taxableAmount = subtotal;
   const gstAmount = (taxableAmount * gstRate) / 100;
   const totalPayable = taxableAmount + gstAmount;
 

@@ -274,7 +274,9 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
                 {/* Row 5: Extra Hours */}
                 <tr>
                   <td className="py-4 font-bold text-slate-900">Extra Hours</td>
-                  <td className="py-4 text-slate-700 font-medium">As applicable</td>
+                  <td className="py-4 text-slate-700 font-medium">
+                    {booking.extraHoursCount ? `${booking.extraHoursCount} hrs` : 'As applicable'}
+                  </td>
                   <td className="py-4 text-right font-bold text-slate-900">
                     {formatCurrency(booking.waitingCharges)}
                   </td>
@@ -289,11 +291,6 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
               <div className="flex justify-between items-center text-slate-700">
                 <span className="font-medium text-slate-600">Subtotal</span>
                 <span className="font-bold text-slate-900">{formatCurrency(booking.subtotal)}</span>
-              </div>
-
-              <div className="flex justify-between items-center text-slate-700">
-                <span className="font-medium text-slate-600">Discount</span>
-                <span className="font-bold text-slate-900">− {formatCurrency(booking.discount)}</span>
               </div>
 
               <div className="flex justify-between items-center text-slate-700">

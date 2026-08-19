@@ -46,6 +46,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   const [ratePerKm, setRatePerKm] = useState<number | ''>();
   const [driverBata, setDriverBata] = useState<number>(0);
   const [tollParking, setTollParking] = useState<number>(0);
+  const [extraHoursCount, setExtraHoursCount] = useState<number | ''>('');
   const [waitingCharges, setWaitingCharges] = useState<number>(0);
   const [discount, setDiscount] = useState<number>(0);
   const [gstRate, setGstRate] = useState<number>(5);
@@ -74,6 +75,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       setRatePerKm(initialData.ratePerKm);
       setDriverBata(initialData.driverBata);
       setTollParking(initialData.tollParking);
+      setExtraHoursCount(initialData.extraHoursCount ?? '');
       setWaitingCharges(initialData.waitingCharges);
       setDiscount(initialData.discount);
       setGstRate(initialData.gstRate ?? 5);
@@ -100,14 +102,13 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       setRatePerKm('');
       setDriverBata(0);
       setTollParking(0);
+      setExtraHoursCount('');
       setWaitingCharges(0);
       setDiscount(0);
       setGstRate(5);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialData]);
-
-
 
   // Live calculation preview
   const liveBookingData = calculateBookingTotals({
@@ -132,6 +133,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     ratePerKm: Number(ratePerKm) || 0,
     driverBata,
     tollParking,
+    extraHoursCount: extraHoursCount === '' ? undefined : Number(extraHoursCount),
     waitingCharges,
     discount,
     gstRate,
@@ -163,6 +165,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     ratePerKm,
     driverBata,
     tollParking,
+    extraHoursCount,
     waitingCharges,
     discount,
     gstRate,
@@ -197,6 +200,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       ratePerKm: Number(ratePerKm) || 0,
       driverBata,
       tollParking,
+      extraHoursCount: extraHoursCount === '' ? undefined : Number(extraHoursCount),
       waitingCharges,
       discount,
       gstRate,
@@ -243,9 +247,11 @@ export const BookingForm: React.FC<BookingFormProps> = ({
               setVehicleNumber('TN37 CE 3466');
               setVehicleType('Innova Crysta');
               setDistanceKm('');
+              setTotalHours('');
               setRatePerKm('');
               setDriverBata(0);
               setTollParking(0);
+              setExtraHoursCount('');
               setWaitingCharges(0);
               setDiscount(0);
               setGstRate(5);
@@ -581,7 +587,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
               <h2 className="text-base font-bold text-slate-900">4. Extra Charges</h2>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
                   Driver Bata (₹)
@@ -610,7 +616,25 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
-                  Extra Hours (₹)
+                  Extra Hours (HRS)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.5"
+                  placeholder="e.g. 2"
+                  value={extraHoursCount}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setExtraHoursCount(val === '' ? '' : parseFloat(val));
+                  }}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 text-slate-900 text-sm font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Extra Hours Amt (₹)
                 </label>
                 <input
                   type="number"
@@ -652,7 +676,9 @@ export const BookingForm: React.FC<BookingFormProps> = ({
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-slate-400">Extra Hours</span>
+                <span className="text-slate-400">
+                  Extra Hours {extraHoursCount ? `(${extraHoursCount} hrs)` : ''}
+                </span>
                 <span className="font-medium text-white">{formatCurrency(waitingCharges)}</span>
               </div>
 

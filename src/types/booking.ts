@@ -35,6 +35,7 @@ export interface BookingData {
   driverBata: number;
   tollParking: number;
   waitingCharges: number;
+  extraHoursCount?: number;
   discount: number;
   gstRate: number; // default 0 (%)
   

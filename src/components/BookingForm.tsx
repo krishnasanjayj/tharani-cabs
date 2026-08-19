@@ -349,23 +349,6 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
-                  Number of Persons
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  max="7"
-                  value={personsCount}
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value, 10) || 1;
-                    setPersonsCount(Math.min(7, Math.max(1, val)));
-                  }}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
                   Invoice Date
                 </label>
                 <input

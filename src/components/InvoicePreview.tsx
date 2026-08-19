@@ -233,7 +233,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
                 <tr>
                   <td className="py-4 font-bold text-slate-900">Cab Fare</td>
                   <td className="py-4 text-slate-700 font-medium">
-                    {booking.vehicleType || 'Innova Crysta'} · {booking.distanceKm} km × ₹{booking.ratePerKm}/km
+                    {booking.vehicleType || 'Innova Crysta'} · {booking.distanceKm} hrs × ₹{booking.ratePerKm}/hr
                   </td>
                   <td className="py-4 text-right font-bold text-slate-900">
                     {formatCurrency(booking.cabFare)}

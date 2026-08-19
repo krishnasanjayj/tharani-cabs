@@ -107,10 +107,6 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   // Update rate per km when vehicle type changes
   const handleVehicleChange = (typeName: string) => {
     setVehicleType(typeName);
-    const found = DEFAULT_VEHICLE_RATES.find((r) => r.name.toLowerCase().includes(typeName.toLowerCase()));
-    if (found) {
-      setRatePerKm(found.ratePerKm);
-    }
   };
 
   // Live calculation preview
@@ -476,10 +472,9 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                   Vehicle Type / Model
                 </label>
                 <select
-                  disabled
                   value={vehicleType}
                   onChange={(e) => handleVehicleChange(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-500 bg-slate-50 cursor-not-allowed text-sm font-medium transition-all"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 bg-white text-sm font-medium transition-all"
                 >
                   {DEFAULT_VEHICLE_RATES.map((rate) => (
                     <option key={rate.id} value={rate.name}>
@@ -495,12 +490,11 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                   Driver Name
                 </label>
                 <input
-                  disabled
                   type="text"
                   placeholder="e.g. Nadhagopal"
                   value={driverName}
                   onChange={(e) => setDriverName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-500 bg-slate-50 cursor-not-allowed text-sm font-medium transition-all"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
                 />
               </div>
 
@@ -509,21 +503,20 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                   Vehicle Registration No.
                 </label>
                 <input
-                  disabled
                   type="text"
                   placeholder="e.g. TN37 CE 3466"
                   value={vehicleNumber}
                   onChange={(e) => setVehicleNumber(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-500 bg-slate-50 cursor-not-allowed text-sm font-medium transition-all"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
                 />
               </div>
             </div>
 
-            {/* Distance & Rate per KM */}
+            {/* Total Hours & Rate per Hour */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
-                  Distance (KM) *
+                  Total Hours *
                 </label>
                 <div className="relative">
                   <input
@@ -537,13 +530,13 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                     }}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-bold transition-all pr-12"
                   />
-                  <span className="absolute right-3.5 top-2.5 text-xs font-semibold text-slate-400">KM</span>
+                  <span className="absolute right-3.5 top-2.5 text-xs font-semibold text-slate-400">HRS</span>
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
-                  Rate per KM (₹) *
+                  Rate per Hour (₹) *
                 </label>
                 <div className="relative">
                   <input
@@ -557,17 +550,17 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                     }}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-bold transition-all pr-12"
                   />
-                  <span className="absolute right-3.5 top-2.5 text-xs font-semibold text-slate-400">₹/KM</span>
+                  <span className="absolute right-3.5 top-2.5 text-xs font-semibold text-slate-400">₹/HR</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Section 4: Extra Charges & Discounts */}
+          {/* Section 4: Extra Hours & Discounts */}
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center space-x-2 pb-3 border-b border-slate-100">
               <Calculator className="w-5 h-5 text-amber-600" />
-              <h2 className="text-base font-bold text-slate-900">4. Extra Charges & Discounts</h2>
+              <h2 className="text-base font-bold text-slate-900">4. Extra Hours & Discounts</h2>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -639,7 +632,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             {/* Calculations Breakdown */}
             <div className="space-y-3 text-sm">
               <div className="flex justify-between items-center">
-                <span className="text-slate-400">Cab Fare ({distanceKm} km × ₹{ratePerKm})</span>
+                <span className="text-slate-400">Cab Fare ({distanceKm} hrs × ₹{ratePerKm})</span>
                 <span className="font-bold text-white">{formatCurrency(liveBookingData.cabFare)}</span>
               </div>
 

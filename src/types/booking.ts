@@ -30,6 +30,7 @@ export interface BookingData {
   
   // Financial calculation inputs
   distanceKm: number;
+  totalHours?: number; // informational only, not used in calculation
   ratePerKm: number;
   driverBata: number;
   tollParking: number;

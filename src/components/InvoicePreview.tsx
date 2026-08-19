@@ -233,7 +233,8 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
                 <tr>
                   <td className="py-4 font-bold text-slate-900">Cab Fare</td>
                   <td className="py-4 text-slate-700 font-medium">
-                    {booking.vehicleType || 'Innova Crysta'} · {booking.distanceKm} hrs × ₹{booking.ratePerKm}/hr
+                    {booking.vehicleType || 'Innova Crysta'} · {booking.distanceKm} km × ₹{booking.ratePerKm}/km
+                    {booking.totalHours ? ` · Total Hours: ${booking.totalHours} hrs` : ''}
                   </td>
                   <td className="py-4 text-right font-bold text-slate-900">
                     {formatCurrency(booking.cabFare)}
@@ -270,9 +271,9 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
                   </td>
                 </tr>
 
-                {/* Row 5: Waiting Charges */}
+                {/* Row 5: Extra Hours */}
                 <tr>
-                  <td className="py-4 font-bold text-slate-900">Waiting Charges</td>
+                  <td className="py-4 font-bold text-slate-900">Extra Hours</td>
                   <td className="py-4 text-slate-700 font-medium">As applicable</td>
                   <td className="py-4 text-right font-bold text-slate-900">
                     {formatCurrency(booking.waitingCharges)}

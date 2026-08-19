@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, MapPin, Car, Calculator, FileCheck, RefreshCw } from 'lucide-react';
 import type { BookingData } from '../types/booking';
-import { DEFAULT_VEHICLE_RATES } from '../types/booking';
+
 import { calculateBookingTotals, generateNextInvoiceId, formatCurrency } from '../utils/billing';
 
 interface BookingFormProps {
@@ -42,7 +42,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   
   // Financial inputs
   const [distanceKm, setDistanceKm] = useState<number | ''>('');
-  const [ratePerKm, setRatePerKm] = useState<number | ''>('');
+  const [totalHours, setTotalHours] = useState<number | ''>('');
+  const [ratePerKm, setRatePerKm] = useState<number | ''>();
   const [driverBata, setDriverBata] = useState<number>(0);
   const [tollParking, setTollParking] = useState<number>(0);
   const [waitingCharges, setWaitingCharges] = useState<number>(0);
@@ -69,6 +70,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       setVehicleNumber(initialData.vehicleNumber || 'TN37 CE 3466');
       setVehicleType(initialData.vehicleType || 'Innova Crysta');
       setDistanceKm(initialData.distanceKm);
+      setTotalHours(initialData.totalHours ?? '');
       setRatePerKm(initialData.ratePerKm);
       setDriverBata(initialData.driverBata);
       setTollParking(initialData.tollParking);
@@ -94,6 +96,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       setVehicleNumber('TN37 CE 3466');
       setVehicleType('Innova Crysta');
       setDistanceKm('');
+      setTotalHours('');
       setRatePerKm('');
       setDriverBata(0);
       setTollParking(0);
@@ -104,10 +107,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialData]);
 
-  // Update rate per km when vehicle type changes
-  const handleVehicleChange = (typeName: string) => {
-    setVehicleType(typeName);
-  };
+
 
   // Live calculation preview
   const liveBookingData = calculateBookingTotals({
@@ -128,6 +128,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     vehicleNumber,
     vehicleType,
     distanceKm: Number(distanceKm) || 0,
+    totalHours: totalHours === '' ? undefined : Number(totalHours),
     ratePerKm: Number(ratePerKm) || 0,
     driverBata,
     tollParking,
@@ -158,6 +159,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     vehicleNumber,
     vehicleType,
     distanceKm,
+    totalHours,
     ratePerKm,
     driverBata,
     tollParking,
@@ -191,6 +193,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       vehicleNumber,
       vehicleType,
       distanceKm: Number(distanceKm) || 0,
+      totalHours: totalHours === '' ? undefined : Number(totalHours),
       ratePerKm: Number(ratePerKm) || 0,
       driverBata,
       tollParking,
@@ -507,11 +510,11 @@ export const BookingForm: React.FC<BookingFormProps> = ({
               </div>
             </div>
 
-            {/* Total Hours & Rate per Hour */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            {/* Distance KM + Total Hours + Rate per KM */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
-                  Total Hours *
+                  Distance (KM) *
                 </label>
                 <div className="relative">
                   <input
@@ -525,13 +528,33 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                     }}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-bold transition-all pr-12"
                   />
+                  <span className="absolute right-3.5 top-2.5 text-xs font-semibold text-slate-400">KM</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                  Total Hours
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    value={totalHours}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setTotalHours(val === '' ? '' : parseFloat(val));
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-bold transition-all pr-12"
+                  />
                   <span className="absolute right-3.5 top-2.5 text-xs font-semibold text-slate-400">HRS</span>
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
-                  Rate per Hour (₹) *
+                  Rate per KM (₹) *
                 </label>
                 <div className="relative">
                   <input
@@ -545,7 +568,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                     }}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-bold transition-all pr-12"
                   />
-                  <span className="absolute right-3.5 top-2.5 text-xs font-semibold text-slate-400">₹/HR</span>
+                  <span className="absolute right-3.5 top-2.5 text-xs font-semibold text-slate-400">₹/KM</span>
                 </div>
               </div>
             </div>
@@ -555,10 +578,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center space-x-2 pb-3 border-b border-slate-100">
               <Calculator className="w-5 h-5 text-amber-600" />
-              <h2 className="text-base font-bold text-slate-900">4. Extra Hours & Discounts</h2>
+              <h2 className="text-base font-bold text-slate-900">4. Extra Charges</h2>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
                   Driver Bata (₹)
@@ -587,26 +610,13 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
-                  Waiting Charges (₹)
+                  Extra Hours (₹)
                 </label>
                 <input
                   type="number"
                   min="0"
                   value={waitingCharges}
                   onChange={(e) => setWaitingCharges(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 text-slate-900 text-sm font-medium"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
-                  Discount (₹)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={discount}
-                  onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 text-slate-900 text-sm font-medium"
                 />
               </div>
@@ -627,7 +637,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             {/* Calculations Breakdown */}
             <div className="space-y-3 text-sm">
               <div className="flex justify-between items-center">
-                <span className="text-slate-400">Cab Fare ({distanceKm} hrs × ₹{ratePerKm})</span>
+                <span className="text-slate-400">Cab Fare ({distanceKm} km × ₹{ratePerKm})</span>
                 <span className="font-bold text-white">{formatCurrency(liveBookingData.cabFare)}</span>
               </div>
 
@@ -642,7 +652,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-slate-400">Waiting Charges</span>
+                <span className="text-slate-400">Extra Hours</span>
                 <span className="font-medium text-white">{formatCurrency(waitingCharges)}</span>
               </div>
 
@@ -650,13 +660,6 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 <span className="text-slate-300 font-medium">Subtotal</span>
                 <span className="font-bold text-white">{formatCurrency(liveBookingData.subtotal)}</span>
               </div>
-
-              {discount > 0 && (
-                <div className="flex justify-between items-center text-emerald-400">
-                  <span>Discount</span>
-                  <span>− {formatCurrency(discount)}</span>
-                </div>
-              )}
 
               <div className="flex justify-between items-center">
                 <span className="text-slate-400">GST ({gstRate}%)</span>

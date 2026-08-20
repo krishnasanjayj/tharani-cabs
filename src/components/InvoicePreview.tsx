@@ -120,7 +120,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
         <div
           id="invoice-render-target"
           className="invoice-container bg-white w-full max-w-[790px] p-8 sm:p-12 shadow-xl border border-slate-200 text-slate-900 rounded-sm font-sans"
-          style={{ minHeight: '1050px' }}
+          style={{ minHeight: '960px' }}
         >
           {/* Header Row */}
           <div className="flex justify-between items-start pt-2">
@@ -164,10 +164,10 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
             </div>
           </div>
 
-          <hr className="my-8 border-slate-200" />
+          <hr className="my-5 border-slate-200" />
 
           {/* Billed To Section */}
-          <div className="mb-8">
+          <div className="mb-5">
             <span className="text-xs font-bold tracking-widest text-[#ca8a04] uppercase">
               BILLED TO
             </span>
@@ -193,7 +193,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
           </div>
 
           {/* Trip Section */}
-          <div className="mb-10">
+          <div className="mb-5">
             <span className="text-xs font-bold tracking-widest text-[#ca8a04] uppercase">
               TRIP
             </span>
@@ -220,7 +220,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
           </div>
 
           {/* Line Items Table */}
-          <div className="mb-12">
+          <div className="mb-6">
             <table className="w-full text-left border-collapse border border-slate-300 rounded-lg overflow-hidden">
               <thead>
                 <tr className="bg-slate-100 border-b border-slate-300">

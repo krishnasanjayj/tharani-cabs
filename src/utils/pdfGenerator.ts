@@ -27,7 +27,7 @@ export async function downloadInvoicePDF(elementId: string, invoiceId: string): 
         if (clonedTarget) {
           clonedTarget.style.width = '794px';
           clonedTarget.style.maxWidth = '794px';
-          clonedTarget.style.minHeight = '1080px';
+          clonedTarget.style.minHeight = '960px';
           clonedTarget.style.boxSizing = 'border-box';
           clonedTarget.style.margin = '0 auto';
           clonedTarget.style.padding = '40px';

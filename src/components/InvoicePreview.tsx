@@ -344,6 +344,21 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
                   style={{ width: '240px', height: 'auto', objectFit: 'contain' }}
                   className="w-60 h-auto object-contain mix-blend-multiply drop-shadow-sm shrink-0"
                 />
+                <img
+                  src="/real_signature.png"
+                  alt="A. Dharani Signature"
+                  style={{
+                    position: 'absolute',
+                    bottom: '22px',
+                    left: '32px',
+                    width: '135px',
+                    height: 'auto',
+                    objectFit: 'contain',
+                    pointerEvents: 'none',
+                    transform: 'rotate(-1deg)',
+                  }}
+                  className="mix-blend-multiply"
+                />
               </div>
             </div>
           </div>

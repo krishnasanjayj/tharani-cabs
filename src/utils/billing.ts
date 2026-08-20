@@ -92,3 +92,44 @@ export function generateNextInvoiceId(existingBookings: { invoiceId: string }[])
   const nextNum = maxNum + 1;
   return `TC-${String(nextNum).padStart(3, '0')}`;
 }
+
+/**
+ * Formats a 24-hour time string "HH:MM" to 12-hour AM/PM format, e.g. "09:00 AM"
+ */
+export function formatTime12Hour(timeStr?: string): string {
+  if (!timeStr) return '';
+  if (/^\d{2}:\d{2}\s?(AM|PM)$/i.test(timeStr)) {
+    return timeStr;
+  }
+  const match = timeStr.match(/^(\d{2}):(\d{2})$/);
+  if (!match) return timeStr;
+  
+  let hours = parseInt(match[1], 10);
+  const minutes = match[2];
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // 0 should be 12
+  const strHours = String(hours).padStart(2, '0');
+  return `${strHours}:${minutes} ${ampm}`;
+}
+
+/**
+ * Parses a 12-hour AM/PM time string "HH:MM AM/PM" to 24-hour format "HH:MM"
+ */
+export function parseTimeTo24Hour(timeStr?: string): string {
+  if (!timeStr) return '';
+  const match = timeStr.match(/^(\d{2}):(\d{2})\s?(AM|PM)$/i);
+  if (!match) return timeStr;
+  
+  let hours = parseInt(match[1], 10);
+  const minutes = match[2];
+  const ampm = match[3].toUpperCase();
+  
+  if (ampm === 'PM' && hours < 12) {
+    hours += 12;
+  } else if (ampm === 'AM' && hours === 12) {
+    hours = 0;
+  }
+  
+  return `${String(hours).padStart(2, '0')}:${minutes}`;
+}

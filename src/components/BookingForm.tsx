@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { User, MapPin, Car, Calculator, FileCheck, RefreshCw } from 'lucide-react';
 import type { BookingData } from '../types/booking';
 
-import { calculateBookingTotals, generateNextInvoiceId, formatCurrency } from '../utils/billing';
+import { calculateBookingTotals, generateNextInvoiceId, formatCurrency, formatTime12Hour, parseTimeTo24Hour } from '../utils/billing';
 
 interface BookingFormProps {
   onSaveBooking: (booking: BookingData) => void;
@@ -428,11 +428,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                     Pickup Time
                   </label>
                   <input
-                    type="text"
-                    placeholder="09:00 AM"
-                    value={pickupTime}
-                    onChange={(e) => setPickupTime(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
+                    type="time"
+                    value={parseTimeTo24Hour(pickupTime)}
+                    onChange={(e) => setPickupTime(formatTime12Hour(e.target.value))}
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all cursor-pointer"
                   />
                 </div>
                 <div>
@@ -440,11 +439,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                     Drop Time
                   </label>
                   <input
-                    type="text"
-                    placeholder="06:00 PM"
-                    value={dropTime}
-                    onChange={(e) => setDropTime(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
+                    type="time"
+                    value={parseTimeTo24Hour(dropTime)}
+                    onChange={(e) => setDropTime(formatTime12Hour(e.target.value))}
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all cursor-pointer"
                   />
                 </div>
               </div>

@@ -493,8 +493,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                   type="text"
                   placeholder="e.g. TN37 CE 3466"
                   value={vehicleNumber}
-                  onChange={(e) => setVehicleNumber(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all"
+                  onChange={(e) => setVehicleNumber(e.target.value.toUpperCase())}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 text-sm font-medium transition-all uppercase"
                 />
               </div>
             </div>

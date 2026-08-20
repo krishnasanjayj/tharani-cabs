@@ -44,10 +44,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   const [distanceKm, setDistanceKm] = useState<number | ''>('');
   const [totalHours, setTotalHours] = useState<number | ''>('');
   const [ratePerKm, setRatePerKm] = useState<number | ''>();
-  const [driverBata, setDriverBata] = useState<number>(0);
-  const [tollParking, setTollParking] = useState<number>(0);
+  const [driverBata, setDriverBata] = useState<number | ''>('');
+  const [tollParking, setTollParking] = useState<number | ''>('');
   const [extraHoursCount, setExtraHoursCount] = useState<number | ''>('');
-  const [waitingCharges, setWaitingCharges] = useState<number>(0);
+  const [waitingCharges, setWaitingCharges] = useState<number | ''>('');
   const [discount, setDiscount] = useState<number>(0);
   const [gstRate, setGstRate] = useState<number | ''>('');
 
@@ -73,10 +73,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       setDistanceKm(initialData.distanceKm);
       setTotalHours(initialData.totalHours ?? '');
       setRatePerKm(initialData.ratePerKm);
-      setDriverBata(initialData.driverBata);
-      setTollParking(initialData.tollParking);
+      setDriverBata(initialData.driverBata || '');
+      setTollParking(initialData.tollParking || '');
       setExtraHoursCount(initialData.extraHoursCount ?? '');
-      setWaitingCharges(initialData.waitingCharges);
+      setWaitingCharges(initialData.waitingCharges || '');
       setDiscount(initialData.discount);
       setGstRate(initialData.gstRate ?? '');
     } else {
@@ -100,10 +100,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       setDistanceKm('');
       setTotalHours('');
       setRatePerKm('');
-      setDriverBata(0);
-      setTollParking(0);
+      setDriverBata('');
+      setTollParking('');
       setExtraHoursCount('');
-      setWaitingCharges(0);
+      setWaitingCharges('');
       setDiscount(0);
       setGstRate('');
     }
@@ -131,10 +131,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     distanceKm: Number(distanceKm) || 0,
     totalHours: totalHours === '' ? undefined : Number(totalHours),
     ratePerKm: Number(ratePerKm) || 0,
-    driverBata,
-    tollParking,
+    driverBata: driverBata === '' ? 0 : Number(driverBata),
+    tollParking: tollParking === '' ? 0 : Number(tollParking),
     extraHoursCount: extraHoursCount === '' ? undefined : Number(extraHoursCount),
-    waitingCharges,
+    waitingCharges: waitingCharges === '' ? 0 : Number(waitingCharges),
     discount,
     gstRate: gstRate === '' ? 0 : Number(gstRate),
     createdAt: new Date().toISOString(),
@@ -198,10 +198,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       distanceKm: Number(distanceKm) || 0,
       totalHours: totalHours === '' ? undefined : Number(totalHours),
       ratePerKm: Number(ratePerKm) || 0,
-      driverBata,
-      tollParking,
+      driverBata: driverBata === '' ? 0 : Number(driverBata),
+      tollParking: tollParking === '' ? 0 : Number(tollParking),
       extraHoursCount: extraHoursCount === '' ? undefined : Number(extraHoursCount),
-      waitingCharges,
+      waitingCharges: waitingCharges === '' ? 0 : Number(waitingCharges),
       discount,
       gstRate: gstRate === '' ? 0 : Number(gstRate),
       createdAt: new Date().toISOString(),
@@ -579,7 +579,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                   type="number"
                   min="0"
                   value={driverBata}
-                  onChange={(e) => setDriverBata(parseFloat(e.target.value) || 0)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setDriverBata(val === '' ? '' : parseFloat(val));
+                  }}
                   className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 text-slate-900 text-sm font-medium"
                 />
               </div>
@@ -592,7 +595,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                   type="number"
                   min="0"
                   value={tollParking}
-                  onChange={(e) => setTollParking(parseFloat(e.target.value) || 0)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setTollParking(val === '' ? '' : parseFloat(val));
+                  }}
                   className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 text-slate-900 text-sm font-medium"
                 />
               </div>
@@ -623,7 +629,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                   type="number"
                   min="0"
                   value={waitingCharges}
-                  onChange={(e) => setWaitingCharges(parseFloat(e.target.value) || 0)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setWaitingCharges(val === '' ? '' : parseFloat(val));
+                  }}
                   className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 text-slate-900 text-sm font-medium"
                 />
               </div>
@@ -664,19 +673,19 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
               <div className="flex justify-between items-center">
                 <span className="text-slate-400">Driver Bata</span>
-                <span className="font-medium text-white">{formatCurrency(driverBata)}</span>
+                <span className="font-medium text-white">{formatCurrency(liveBookingData.driverBata)}</span>
               </div>
 
               <div className="flex justify-between items-center">
                 <span className="text-slate-400">Toll & Parking</span>
-                <span className="font-medium text-white">{formatCurrency(tollParking)}</span>
+                <span className="font-medium text-white">{formatCurrency(liveBookingData.tollParking)}</span>
               </div>
 
               <div className="flex justify-between items-center">
                 <span className="text-slate-400">
                   Extra Hours {extraHoursCount ? `(${extraHoursCount} hrs)` : ''}
                 </span>
-                <span className="font-medium text-white">{formatCurrency(waitingCharges)}</span>
+                <span className="font-medium text-white">{formatCurrency(liveBookingData.waitingCharges)}</span>
               </div>
 
               <div className="pt-2 border-t border-slate-800 flex justify-between items-center">

@@ -336,7 +336,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
                   width="240"
                   height="112"
                   style={{ width: '240px', height: 'auto', objectFit: 'contain' }}
-                  className="w-60 h-auto object-contain mix-blend-multiply drop-shadow-sm shrink-0"
+                  className="w-60 h-auto object-contain drop-shadow-sm shrink-0"
                 />
                 <img
                   src="/real_signature.png"
@@ -351,7 +351,6 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
                     pointerEvents: 'none',
                     transform: 'rotate(-1deg)',
                   }}
-                  className="mix-blend-multiply"
                 />
               </div>
             </div>

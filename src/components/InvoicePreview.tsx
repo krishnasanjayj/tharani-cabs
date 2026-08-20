@@ -220,38 +220,38 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
           </div>
 
           {/* Line Items Table */}
-          <div className="mb-8">
-            <table className="w-full text-left border-collapse">
+          <div className="mb-12">
+            <table className="w-full text-left border-collapse border border-slate-300 rounded-lg overflow-hidden">
               <thead>
-                <tr className="border-b border-slate-200">
-                  <th className="py-3 text-xs font-bold tracking-wider text-slate-500 uppercase w-1/4">
+                <tr className="bg-slate-100 border-b border-slate-300">
+                  <th className="p-3 border-r border-slate-300 text-xs font-bold tracking-wider text-slate-700 uppercase w-1/4">
                     DESCRIPTION
                   </th>
-                  <th className="py-3 text-xs font-bold tracking-wider text-slate-500 uppercase w-1/2">
+                  <th className="p-3 border-r border-slate-300 text-xs font-bold tracking-wider text-slate-700 uppercase w-1/2">
                     DETAILS
                   </th>
-                  <th className="py-3 text-xs font-bold tracking-wider text-slate-500 uppercase text-right w-1/4">
+                  <th className="p-3 text-xs font-bold tracking-wider text-slate-700 uppercase text-right w-1/4">
                     AMOUNT (₹)
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-sm">
+              <tbody className="divide-y divide-slate-200 text-sm">
                 {/* Row 1: Cab Fare */}
                 <tr>
-                  <td className="py-4 font-bold text-slate-900">Cab Fare</td>
-                  <td className="py-4 text-slate-700 font-medium">
+                  <td className="p-3 border-r border-slate-200 align-top font-bold text-slate-900">Cab Fare</td>
+                  <td className="p-3 border-r border-slate-200 align-top text-slate-700 font-medium">
                     {booking.vehicleType ? `${booking.vehicleType} · ` : ''}{booking.distanceKm} km × ₹{booking.ratePerKm}/km
                     {booking.totalHours ? ` · Total Hours: ${booking.totalHours} hrs` : ''}
                   </td>
-                  <td className="py-4 text-right font-bold text-slate-900">
+                  <td className="p-3 align-top text-right font-bold text-slate-900">
                     {formatCurrency(booking.cabFare)}
                   </td>
                 </tr>
 
                 {/* Row 2: Driver / Vehicle */}
                 <tr>
-                  <td className="py-4 font-bold text-slate-900">Driver / Vehicle</td>
-                  <td className="py-4 text-slate-700 font-medium">
+                  <td className="p-3 border-r border-slate-200 align-top font-bold text-slate-900">Driver / Vehicle</td>
+                  <td className="p-3 border-r border-slate-200 align-top text-slate-700 font-medium">
                     {[
                       booking.driverName ? `Driver: ${booking.driverName}` : '',
                       booking.vehicleNumber ? `Vehicle: ${booking.vehicleNumber}` : '',
@@ -259,65 +259,59 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
                       (booking.pickupTime || booking.dropTime) ? `Time: ${booking.pickupTime || ''}${booking.dropTime ? ` - ${booking.dropTime}` : ''}` : '',
                     ].filter(Boolean).join(' · ')}
                   </td>
-                  <td className="py-4 text-right text-slate-400 font-normal">—</td>
+                  <td className="p-3 align-top text-right text-slate-400 font-normal">—</td>
                 </tr>
 
                 {/* Row 3: Driver Bata */}
                 <tr>
-                  <td className="py-4 font-bold text-slate-900">Driver Bata</td>
-                  <td className="py-4 text-slate-700 font-medium">Allowance</td>
-                  <td className="py-4 text-right font-bold text-slate-900">
+                  <td className="p-3 border-r border-slate-200 align-top font-bold text-slate-900">Driver Bata</td>
+                  <td className="p-3 border-r border-slate-200 align-top text-slate-700 font-medium">Allowance</td>
+                  <td className="p-3 align-top text-right font-bold text-slate-900">
                     {formatCurrency(booking.driverBata)}
                   </td>
                 </tr>
 
                 {/* Row 4: Toll & Parking */}
                 <tr>
-                  <td className="py-4 font-bold text-slate-900">Toll & Parking</td>
-                  <td className="py-4 text-slate-700 font-medium">As applicable</td>
-                  <td className="py-4 text-right font-bold text-slate-900">
+                  <td className="p-3 border-r border-slate-200 align-top font-bold text-slate-900">Toll & Parking</td>
+                  <td className="p-3 border-r border-slate-200 align-top text-slate-700 font-medium">As applicable</td>
+                  <td className="p-3 align-top text-right font-bold text-slate-900">
                     {formatCurrency(booking.tollParking)}
                   </td>
                 </tr>
 
                 {/* Row 5: Extra Hours */}
                 <tr>
-                  <td className="py-4 font-bold text-slate-900">Extra Hours</td>
-                  <td className="py-4 text-slate-700 font-medium">
+                  <td className="p-3 border-r border-slate-200 align-top font-bold text-slate-900">Extra Hours</td>
+                  <td className="p-3 border-r border-slate-200 align-top text-slate-700 font-medium">
                     {booking.extraHoursCount ? `${booking.extraHoursCount} hrs` : 'As applicable'}
                   </td>
-                  <td className="py-4 text-right font-bold text-slate-900">
+                  <td className="p-3 align-top text-right font-bold text-slate-900">
                     {formatCurrency(booking.waitingCharges)}
                   </td>
                 </tr>
+
+                {/* Subtotal Row */}
+                <tr className="bg-slate-50 border-t border-slate-300">
+                  <td colSpan={2} className="p-3 border-r border-slate-200 text-right font-bold text-slate-600">Subtotal</td>
+                  <td className="p-3 text-right font-bold text-slate-900">{formatCurrency(booking.subtotal)}</td>
+                </tr>
+
+                {/* GST Row (if applicable) */}
+                {booking.gstRate > 0 && (
+                  <tr className="bg-slate-50">
+                    <td colSpan={2} className="p-3 border-r border-slate-200 text-right font-bold text-slate-600">GST ({booking.gstRate}%)</td>
+                    <td className="p-3 text-right font-bold text-slate-900">{formatCurrency(booking.gstAmount)}</td>
+                  </tr>
+                )}
+
+                {/* Total Payable Row */}
+                <tr className="bg-amber-50 border-t-2 border-amber-300">
+                  <td colSpan={2} className="p-3 border-r border-slate-200 text-right font-extrabold text-amber-800 uppercase tracking-wider">Total Payable</td>
+                  <td className="p-3 text-right font-extrabold text-amber-800 text-lg">{formatCurrency(booking.totalPayable)}</td>
+                </tr>
               </tbody>
             </table>
-          </div>
-
-          {/* Subtotal & Totals Summary Block */}
-          <div className="flex justify-end mb-16 pt-2">
-            <div className="w-72 space-y-3 text-sm">
-              <div className="flex justify-between items-center text-slate-700">
-                <span className="font-medium text-slate-600">Subtotal</span>
-                <span className="font-bold text-slate-900">{formatCurrency(booking.subtotal)}</span>
-              </div>
-
-              {booking.gstRate > 0 && (
-                <div className="flex justify-between items-center text-slate-700">
-                  <span className="font-medium text-slate-600">GST ({booking.gstRate}%)</span>
-                  <span className="font-bold text-slate-900">{formatCurrency(booking.gstAmount)}</span>
-                </div>
-              )}
-
-              <div className="pt-4 flex justify-between items-baseline border-t-0">
-                <span className="text-sm font-bold tracking-widest text-[#ca8a04] uppercase">
-                  TOTAL PAYABLE
-                </span>
-                <span className="text-2xl font-extrabold text-[#ca8a04] tracking-tight">
-                  {formatCurrency(booking.totalPayable)}
-                </span>
-              </div>
-            </div>
           </div>
 
           {/* Footer Section */}
